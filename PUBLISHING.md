@@ -10,7 +10,7 @@
 1. Set the version in `src/core/smstunnel/Version.php` (`NUMBER`), `src/oc4/install.json` and `CHANGELOG.md` (the build refuses to run when they differ). A version that changes the table of texts needs an upgrade step in the controllers' `install()` (it runs again when the module is reinstalled).
 2. Check and build:
    ```bash
-   bash tools/check.sh      # php -l + unit tests on PHP 7.1, 7.4, 8.1, 8.2, 8.3, 8.4, 8.5; php -l on PHP 5.6 of the files OpenCart 3.0 loads first
+   bash tools/check.sh      # php -l + unit tests on PHP 7.1, 7.4, 8.1, 8.2, 8.3, 8.4, 8.5; on PHP 5.6, php -l of the files OpenCart 3.0 loads first + tests/oldphp
    bash tools/build.sh      # build/smstunnel-oc3.ocmod.zip and build/smstunnel-oc4/smstunnel.ocmod.zip
    ```
 3. Run the end-to-end tests on OpenCart 3.0.5.1, 3.0.3.8 (PHP 7.4), 4.0.2.3 and 4.1.0.4 (README, "Development"). Add `--shots` to the 3.0.5.1 and 4.1.0.4 runs to refresh the screenshots in `listing/`. `node tools/listing-images.mjs` redraws the marketplace thumbnail and banner (only needed when their words or the logo change).
@@ -54,13 +54,6 @@ The two packages:
 1. Release as above (version, `CHANGELOG.md`, check, build, end-to-end tests).
 2. In **Account > Extensions**, click **EDIT** on the listing. Under the downloads, upload the two new files (the OpenCart 4 one named exactly `smstunnel.ocmod.zip`), give them the new version in their names, tick the same OpenCart versions, and remove the old files or keep them for older versions.
 3. Add a line from `CHANGELOG.md` under History, and save.
-
-### For the next version
-
-Two gaps in 1.0.0, both only on OpenCart 3.0 with a PHP older than 7.1 (very few stores). There the extension already sends nothing, its page says it needs PHP 7.1, and checkout is left alone:
-
-- **Uninstalling stops with a PHP parse error** when it reaches the extension's own classes (`Settings::CODE`, `TextLog`), which need PHP 7. By then OpenCart has already removed the module from its list and the events are deleted, so a reload shows it uninstalled. Fix: in the OpenCart 3 admin controller's `uninstall()`, delete the events, then return when `PHP_VERSION_ID < 70100`.
-- **After the PHP upgrade nothing is set up** (no events, settings or table, because `install()` did nothing on the old PHP), and the settings page fails on the missing table. Until the fix, README tells the owner to uninstall and install again. Fix: the settings page runs `install()` when the module is installed (`model_setting_extension->getInstalled('module')`) but its events are missing.
 
 ### Traps in the opencart.com form
 

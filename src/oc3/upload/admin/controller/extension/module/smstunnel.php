@@ -46,6 +46,18 @@ class ControllerExtensionModuleSmstunnel extends Controller {
 			return;
 		}
 
+		$this->load->model('setting/extension');
+
+		if (!in_array('smstunnel', $this->model_setting_extension->getInstalled('module'), true)) {
+			// Opened after uninstalling (OpenCart 3.0.3 keeps the permission): nothing to set, back to the list.
+			$this->response->redirect($this->link('marketplace/extension', '&type=module'));
+		}
+
+		if (!$this->eventsExist()) {
+			// Installed while the store ran a PHP older than 7.1, where install() set nothing up: do it now.
+			$this->install();
+		}
+
 		$page = $this->page();
 		$posted = null;
 		$errors = array();
@@ -174,6 +186,12 @@ class ControllerExtensionModuleSmstunnel extends Controller {
 			$this->model_setting_event->deleteEventByCode($code);
 		}
 
+		if (PHP_VERSION_ID < self::MIN_PHP_ID) {
+			// OpenCart deletes the settings itself. The rest needs the extension's own code, which this PHP
+			// cannot read, and an install on this PHP created nothing else.
+			return;
+		}
+
 		$this->load->model('setting/setting');
 		$this->model_setting_setting->deleteSetting(Settings::CODE);
 
@@ -205,6 +223,21 @@ class ControllerExtensionModuleSmstunnel extends Controller {
 				$log->write($line);
 			}
 		);
+	}
+
+	/**
+	 * Whether all the extension's events are in OpenCart's list (an event the owner turned off counts).
+	 */
+	private function eventsExist() {
+		$codes = array();
+
+		foreach (array_keys(self::EVENTS) as $code) {
+			$codes[] = "'" . $this->db->escape($code) . "'";
+		}
+
+		$query = $this->db->query("SELECT COUNT(*) AS `total` FROM `" . DB_PREFIX . "event` WHERE `code` IN (" . implode(', ', $codes) . ")");
+
+		return (int)$query->row['total'] >= count(self::EVENTS);
 	}
 
 	private function link($route, $args = '') {

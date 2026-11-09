@@ -12,7 +12,7 @@ namespace SmsTunnel\OpenCart;
 final class Version
 {
     /** The extension's version (also in install.json and CHANGELOG.md). */
-    const NUMBER = '1.0.0';
+    const NUMBER = '1.0.1';
 
     const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=io.smstunnel.app';
 

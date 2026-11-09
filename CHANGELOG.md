@@ -2,6 +2,15 @@
 
 All notable changes to SMSTunnel for OpenCart. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.0.1] - 2026-11-09
+
+For OpenCart 3.0 stores on a PHP older than 7.1, where the extension sends nothing and its page says it needs PHP 7.1:
+
+- Uninstalling no longer stops with a PHP error.
+- Once the store runs PHP 7.1 or newer, opening the SMSTunnel page sets the extension up; it no longer has to be uninstalled and installed again.
+
+Also on OpenCart 3.0: opening the SMSTunnel page after uninstalling the module (OpenCart 3.0.3 keeps the permission to it) goes back to the list of modules instead of failing. The OpenCart 4 package only carries the new version number.
+
 ## [1.0.0] - 2026-11-09
 
 First version, for OpenCart 3.0.x (`smstunnel-oc3.ocmod.zip`) and OpenCart 4.0.2.x / 4.1.x (`smstunnel.ocmod.zip`). Tested on OpenCart 3.0.5.1 (PHP 8.3), 3.0.3.8 (PHP 7.4), 4.0.2.3 (PHP 8.2) and 4.1.0.4 (PHP 8.3).
@@ -17,4 +26,5 @@ First version, for OpenCart 3.0.x (`smstunnel-oc3.ocmod.zip`) and OpenCart 4.0.2
 - On OpenCart 3.0 with a PHP older than 7.1, the extension does nothing: its page says which PHP it needs, installing it sets nothing up, and checkout is left alone. After a PHP upgrade, uninstall it and install it again.
 - Uninstalling removes the events, the settings and the list of texts.
 
+[1.0.1]: https://github.com/narcisbodea/smstunnel-opencart/releases/tag/v1.0.1
 [1.0.0]: https://github.com/narcisbodea/smstunnel-opencart/releases/tag/v1.0.0

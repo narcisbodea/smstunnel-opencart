@@ -32,6 +32,7 @@ const resultsDir = path.join(HERE, 'results');
 const shotsDir = path.join(REPO, 'listing');
 fs.mkdirSync(resultsDir, { recursive: true });
 
+const VERSION = fs.readFileSync(path.join(REPO, 'src', 'core', 'smstunnel', 'Version.php'), 'utf8').match(/const NUMBER = '([^']+)'/)[1];
 const OWNER = ['+14155550100', '+14155550101'];
 const TEST_NUMBER = '+14155550199';
 const PHONE_ONLINE = '6650c0ffee0000000000a001';
@@ -118,6 +119,22 @@ try {
     JSON.stringify(defaults),
   );
 
+  if (major === 3) {
+    // Installed while the store ran a PHP older than 7.1, where install() sets nothing up: on a newer PHP,
+    // opening the SMSTunnel page sets the module up.
+    sql(project, "DELETE FROM oc_event WHERE code LIKE 'smstunnel%'");
+    sql(project, "DELETE FROM oc_setting WHERE code = 'module_smstunnel'");
+    sql(project, 'DROP TABLE oc_smstunnel_log');
+    await admin.goto(adminUrl(R.settings));
+    report.ok(
+      'OpenCart 3: installed under an old PHP, the page sets it up (events, table, settings)',
+      (await admin.isVisible('#smstunnel-status ol.smstunnel-steps')) &&
+        sql(project, "SELECT COUNT(*) FROM oc_event WHERE code LIKE 'smstunnel%' AND status = 1")[0][0] === '2' &&
+        sql(project, "SHOW TABLES LIKE 'oc_smstunnel_log'").length === 1 &&
+        sql(project, "SELECT COUNT(*) FROM oc_setting WHERE `key` = 'module_smstunnel_customer_statuses'")[0][0] === '1',
+    );
+  }
+
   // 2. Settings.
   await admin.goto(adminUrl(R.settings));
   report.ok('settings page opens, with the first steps', await admin.isVisible('#smstunnel-status ol.smstunnel-steps'));
@@ -130,7 +147,7 @@ try {
   report.ok('owner numbers saved in international format', savedOwner === OWNER.join(','), savedOwner);
   report.ok('phones listed from SMSTunnel, online and offline', (await admin.locator('.smstunnel-phones tbody tr').count()) === 2 && /Online/.test(await admin.innerText('.smstunnel-phones')) && /Offline/.test(await admin.innerText('.smstunnel-phones')));
   const devicesCall = (await fake.requests()).find((r) => r.path === '/api/v1/devices');
-  report.ok('phones read with GET /api/v1/devices and the key', Boolean(devicesCall) && devicesCall.keyOk && /^SMSTunnel-OpenCart\/1\.0\.0 \(OpenCart /.test(devicesCall.userAgent), devicesCall && devicesCall.userAgent);
+  report.ok('phones read with GET /api/v1/devices and the key', Boolean(devicesCall) && devicesCall.keyOk && devicesCall.userAgent.startsWith(`SMSTunnel-OpenCart/${VERSION} (OpenCart `), devicesCall && devicesCall.userAgent);
   await saveSettings({ device_id: PHONE_ONLINE });
   report.ok('a phone can be picked from the list', sql(project, "SELECT value FROM oc_setting WHERE `key` = 'module_smstunnel_device_id'")[0][0] === PHONE_ONLINE);
   await saveSettings({ owner_numbers: '12, +1 900 555 0123' });
@@ -302,6 +319,15 @@ try {
   await fake.reset();
   const order7 = await placeOrder({ firstname: 'After', lastname: 'Uninstall', telephone: '(415) 555-0127' });
   report.ok('after uninstall: checkout works and sends nothing', order7.id > 0 && (await fake.sends()).length === 0);
+  if (major === 3) {
+    // OpenCart 3.0.3 keeps the permission to the page after uninstalling: opening it sets nothing up again.
+    await admin.goto(adminUrl(R.settings));
+    report.ok(
+      'OpenCart 3: the SMSTunnel page after uninstall sets nothing up',
+      sql(project, "SELECT COUNT(*) FROM oc_event WHERE code LIKE 'smstunnel%'")[0][0] === '0' && sql(project, "SHOW TABLES LIKE 'oc_smstunnel_log'").length === 0,
+      admin.url().replace(/user_token=[^&]+/, 'user_token=…'),
+    );
+  }
 } catch (error) {
   report.ok('run finished without an exception', false, String(error.stack).split('\n').slice(0, 4).join(' | '));
   if (admin) await admin.screenshot({ path: path.join(resultsDir, `${project}-${version}-admin-error.png`), fullPage: true }).catch(() => {});

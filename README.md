@@ -41,13 +41,13 @@ There are two packages, one per OpenCart generation:
 
 **OpenCart 3.0**
 
-1. Download `smstunnel-oc3.ocmod.zip` from the [OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410).
+1. Download `smstunnel-oc3.ocmod.zip` from the [OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410) or from the [latest release](https://github.com/narcisbodea/smstunnel-opencart/releases/latest) here.
 2. In your admin, open **Extensions > Installer**, click **Upload** and choose the zip. Wait for *Success*.
 3. Open **Extensions > Extensions**, choose **Modules**, and click the green **+** next to **SMSTunnel: SMS from your own phone**. Then click the blue pencil.
 
 **OpenCart 4**
 
-1. Download `smstunnel.ocmod.zip` from the [OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410) (keep the name).
+1. Download `smstunnel.ocmod.zip` from the [OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410) or from the [latest release](https://github.com/narcisbodea/smstunnel-opencart/releases/latest) here (keep the name).
 2. In your admin, open **Extensions > Installer**, click the upload button and choose the zip. In the list below, click the green **+** next to SMSTunnel.
 3. Open **Extensions > Extensions**, choose **Modules**, and click the green **+** next to **SMSTunnel: SMS from your own phone**. Then click the blue pencil.
 4. OpenCart 4 asks for a telephone at checkout only when you turn it on: open **System > Settings**, edit your store, and on the **Option** tab turn on **Telephone Display** and **Telephone Required**. The SMSTunnel page warns you while it is off.
@@ -100,7 +100,7 @@ Texts are sent while OpenCart saves the order or the status, with short timeouts
 | Waiting for your phone | Your phone is offline. The text goes out when it is back online; nothing to do. |
 | Not confirmed | The text left for SMSTunnel but no answer came back in time, so it may have gone out. It is never sent again on its own: check **Messages** in your SMSTunnel dashboard, and use **Send again** only if it is not there. |
 | Skipped | The order has no telephone, or one that cannot be texted. |
-| SMSTunnel for OpenCart needs PHP 7.1 or newer | OpenCart 3.0 runs on a PHP the extension cannot use, so it sends nothing. Ask your host for PHP 7.1 or newer (7.4 or 8.x is best), then uninstall SMSTunnel and install it again in **Extensions > Extensions > Modules**: an install under the old PHP set nothing up. |
+| SMSTunnel for OpenCart needs PHP 7.1 or newer | OpenCart 3.0 runs on a PHP the extension cannot use, so it sends nothing. Ask your host for PHP 7.1 or newer (7.4 or 8.x is best). Then open the SMSTunnel page once: it sets itself up. |
 
 ## Several stores
 
@@ -179,8 +179,8 @@ Send only texts that people expect from you: order updates, alerts to yourself, 
 
 ```bash
 bash tools/build.sh      # build/smstunnel-oc3.ocmod.zip and build/smstunnel-oc4/smstunnel.ocmod.zip
-bash tools/check.sh      # php -l and the unit tests on PHP 7.1, 7.4, 8.1, 8.2, 8.3, 8.4 and 8.5,
-                         # and php -l on PHP 5.6 of the files OpenCart 3.0 loads first
+bash tools/check.sh      # php -l and the unit tests on PHP 7.1, 7.4, 8.1, 8.2, 8.3, 8.4 and 8.5; on PHP 5.6,
+                         # php -l of the files OpenCart 3.0 loads first and tests/oldphp (an old PHP: nothing runs)
 ```
 
 `src/core/smstunnel/` is the code both packages share (the API client, numbers, texts, the list of texts, the order logic, the settings page's logic); `src/oc3/` and `src/oc4/` hold each OpenCart generation's controllers and templates, and `src/language/` the admin wording.
