@@ -8,9 +8,9 @@ file only holds the words, the structure and the assets to use.
   number: shipped, complete, canceled. Free extension for OpenCart 3 and 4.
 - **Screenshots:** `listing/` of this repository (`oc4-settings-page.png`, `oc4-phones-and-test-text.png`,
   `oc4-settings.png`, `oc4-recent-texts.png`, and the `oc3-*` ones for OpenCart 3.0). Sample data only.
-- **Downloads**: the OpenCart Marketplace listing, live since 9 November 2026, with both packages:
-  `https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410`.
-  Once the GitHub release exists (it needs the owner's OK), direct links can go next to it:
+- **Downloads**: the OpenCart Marketplace listing (live since 9 November 2026), with both packages:
+  `https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410`,
+  and the latest GitHub release (public since 9 November 2026), as direct links:
   - OpenCart 3.0.x: `https://github.com/narcisbodea/smstunnel-opencart/releases/latest/download/smstunnel-oc3.ocmod.zip`
   - OpenCart 4.0.2 and 4.1: `https://github.com/narcisbodea/smstunnel-opencart/releases/latest/download/smstunnel.ocmod.zip`
 - **Non-affiliation line (keep it on the page):** SMSTunnel for OpenCart is not affiliated with, endorsed by, or
@@ -26,6 +26,8 @@ Your OpenCart store texts customers when their order ships, is complete or is ca
 order: from your own Android phone, with your own number. Customers see a number they know and can simply reply.
 
 [Get it from the OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410) (OpenCart 3 and 4) ·
+[Download for OpenCart 4](https://github.com/narcisbodea/smstunnel-opencart/releases/latest/download/smstunnel.ocmod.zip) ·
+[Download for OpenCart 3](https://github.com/narcisbodea/smstunnel-opencart/releases/latest/download/smstunnel-oc3.ocmod.zip) ·
 [Get it on Google Play](https://play.google.com/store/apps/details?id=io.smstunnel.app) (badge: `/google-play-badge.png`)
 
 ## How it works
@@ -65,8 +67,8 @@ tracking number, say) goes into the text when you tick **Notify Customer**.
 
 ## Install
 
-1. Download the package for your OpenCart from the [OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410): `smstunnel.ocmod.zip` for
-   OpenCart 4 (keep the file name) or `smstunnel-oc3.ocmod.zip` for OpenCart 3.
+1. Download the package for your OpenCart from the [OpenCart Marketplace](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410), or directly:
+   [OpenCart 4](https://github.com/narcisbodea/smstunnel-opencart/releases/latest/download/smstunnel.ocmod.zip) (keep the file name `smstunnel.ocmod.zip`) or [OpenCart 3](https://github.com/narcisbodea/smstunnel-opencart/releases/latest/download/smstunnel-oc3.ocmod.zip).
 2. In your admin, open **Extensions > Installer** and upload it (on OpenCart 4, then click the green **+** in the list).
 3. Open **Extensions > Extensions > Modules**, install **SMSTunnel**, and edit it: paste the API key from
    **Apps → Add an app** in your [dashboard](https://dashboard.smstunnel.io/apps), add your number, and click

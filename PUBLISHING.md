@@ -2,8 +2,8 @@
 
 | Where | State |
 | --- | --- |
-| **The OpenCart Marketplace** (what OpenCart store owners search, also shown in the admin's **Extensions > Marketplace**) | **Live since 9 November 2026**: [extension 50410](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410), version 1.0.0, seller account `narcisbodea`. It was in the marketplace search the same day. |
-| **GitHub releases** (`narcisbodea/smstunnel-opencart`) | Not yet. The repository is local only; making it public needs the owner's OK. |
+| **The OpenCart Marketplace** (what OpenCart store owners search, also shown in the admin's **Extensions > Marketplace**) | **Live since 9 November 2026**: [extension 50410](https://www.opencart.com/index.php?route=marketplace/extension/info&extension_id=50410), seller account `narcisbodea`. Version 1.0.0 was public at once. The 1.0.1 files, their names, the history line and a GitHub link in the description were saved the same day; minutes later the public page and its download list still showed 1.0.0, so opencart.com reviews or caches edits. Check the download list (the listing's DOWNLOAD button) to see when 1.0.1 is out. |
+| **GitHub** ([narcisbodea/smstunnel-opencart](https://github.com/narcisbodea/smstunnel-opencart)) | **Public since 9 November 2026**: branch `main`, tags `v1.0.0` and `v1.0.1`, and the [1.0.1 release](https://github.com/narcisbodea/smstunnel-opencart/releases/tag/v1.0.1) with both packages. |
 
 ## Before every release
 
@@ -42,11 +42,11 @@ The two packages:
 - **Tags**: SMS, SMS notification, order status SMS, new order SMS, text message, shipping notification, order alert, Android, own phone number.
 - **Thumbnail** `listing/marketplace-thumb.png` (260 x 152) and **banner** `listing/marketplace-banner.png` (710 x 380), drawn by `node tools/listing-images.mjs` from the site's logo.
 - **Screenshots**, in this order: `oc4-settings-page.png`, `oc4-phones-and-test-text.png`, `oc4-settings.png`, `oc4-recent-texts.png`, `oc3-settings-page.png`, `oc3-recent-texts.png` (sample data only, numbers `+1415555xxxx`).
-- **Downloads** (the Cloud option off on both):
-  - "SMSTunnel for OpenCart 1.0.0 (OpenCart 3.0.x)": `build/smstunnel-oc3.ocmod.zip` (70,652 bytes), for 3.0.0.0 to 3.0.5.1 and 3.x.x.x.
-  - "SMSTunnel for OpenCart 1.0.0 (OpenCart 4.0.2+ and 4.1)": `build/smstunnel-oc4/smstunnel.ocmod.zip` (69,933 bytes), uploaded as `smstunnel.ocmod.zip`, for 4.0.2.0 to 4.1.0.4 and 4.x.x.x. Not 4.0.0.0 to 4.0.1.x: those used another route separator (`|`) and were not tested.
-- **History**: "First version: SMSTunnel for OpenCart 1.0.0 for OpenCart 3.0.x and 4.0.2 to 4.1."
-- The description and the documentation are below, as submitted.
+- **Downloads** (the Cloud option off on both; the same two rows since 1.0.0, with new files and names for 1.0.1):
+  - "SMSTunnel for OpenCart 1.0.1 (OpenCart 3.0.x)": `build/smstunnel-oc3.ocmod.zip` (71,050 bytes; 1.0.0 was 70,652), for 3.0.0.0 to 3.0.5.1 and 3.x.x.x.
+  - "SMSTunnel for OpenCart 1.0.1 (OpenCart 4.0.2+ and 4.1)": `build/smstunnel-oc4/smstunnel.ocmod.zip` (69,933 bytes, like 1.0.0), uploaded as `smstunnel.ocmod.zip`, for 4.0.2.0 to 4.1.0.4 and 4.x.x.x. Not 4.0.0.0 to 4.0.1.x: those used another route separator (`|`) and were not tested.
+- **History**: "First version: SMSTunnel for OpenCart 1.0.0 for OpenCart 3.0.x and 4.0.2 to 4.1." and "1.0.1: on OpenCart 3.0 with a PHP older than 7.1, uninstalling no longer stops with a PHP error, and once the store runs PHP 7.1 or newer, opening the SMSTunnel page sets the extension up."
+- The description and the documentation are below, as saved with 1.0.1.
 - **Support**: buyers write through the listing's comments and **Get Support**. OpenCart's seller rules ask for support as long as the extension is listed.
 
 ### Updating the listing
@@ -54,6 +54,9 @@ The two packages:
 1. Release as above (version, `CHANGELOG.md`, check, build, end-to-end tests).
 2. In **Account > Extensions**, click **EDIT** on the listing. Under the downloads, upload the two new files (the OpenCart 4 one named exactly `smstunnel.ocmod.zip`), give them the new version in their names, tick the same OpenCart versions, and remove the old files or keep them for older versions.
 3. Add a line from `CHANGELOG.md` under History, and save.
+4. The form keeps the new values at once, but the public page and its download list can show the previous version for a while (seen with 1.0.1). Look at the download list before announcing the version.
+
+Open the seller area from the **Account** link: its pages need the `member_token` the links carry, and an address typed without it leads to the login page.
 
 ### Traps in the opencart.com form
 
@@ -61,7 +64,7 @@ The two packages:
 - **Going back after a refusal keeps the words but drops every upload** (thumbnail, banner, screenshots, files), although each went to opencart.com as soon as it was chosen: upload them again before saving.
 - **BBCode**: `[b]` works; `[list]` and `[*]` show up as they are, so the lists use `•` and `1.` lines. Plain https:// addresses are enough; the editor's link button opens a browser prompt that can be closed.
 
-### Description, as submitted
+### Description, as saved
 
 ```text
 [b]SMSTunnel for OpenCart[/b] sends order texts from [b]your own Android phone, with your own number[/b]. Your store hands each text to your SMSTunnel account, and the free SMSTunnel app on your phone sends it from its own SIM: customers see a number they know and can simply reply.
@@ -76,7 +79,7 @@ The two packages:
 • Numbers are completed with the customer's country calling code; invalid, premium-rate and short numbers are skipped, with the reason.
 • Your own wording with {firstname} {lastname} {order_id} {total} {store_name} {status} {comment}. Suggested texts in English and Romanian, picked by the language of each order.
 • A test text, your phones with their state (online or offline), and the last texts with what your phone did with them (sent, delivered). Numbers show only their last 2 digits.
-• OpenCart 3.0.x and 4.0.2 to 4.1. Admin pages in English and Romanian. Open source (GPL-3.0-or-later).
+• OpenCart 3.0.x and 4.0.2 to 4.1. Admin pages in English and Romanian. Open source (GPL-3.0-or-later), on GitHub: https://github.com/narcisbodea/smstunnel-opencart
 
 [b]You need[/b] an Android phone with the free SMSTunnel app (Google Play: https://play.google.com/store/apps/details?id=io.smstunnel.app) and an account at https://smstunnel.io. Plans start free.
 
@@ -90,7 +93,7 @@ On OpenCart 4, turn on Telephone Display and Telephone Required in System > Sett
 Send only texts people expect from your store. SMSTunnel for OpenCart is not affiliated with, endorsed by, or sponsored by OpenCart Limited.
 ```
 
-### Documentation, as submitted
+### Documentation, as saved
 
 ```text
 [b]Which file[/b]
@@ -120,23 +123,21 @@ Send only texts people expect from your store. SMSTunnel for OpenCart is not aff
 OpenCart 3.0.x with PHP 7.1 and newer, OpenCart 4.0.2 to 4.1, PHP cURL, an Android phone with the SMSTunnel app and an SMSTunnel account. Full guide: https://smstunnel.io
 ```
 
-## GitHub release
+## GitHub
 
-The repository is local only (branch `master`). To publish it on GitHub:
+**Public since 9 November 2026**: https://github.com/narcisbodea/smstunnel-opencart (branch `main`, a tag and a release per version). Its history starts with one commit per version; the work commits from before publishing stay in the local branch `local-history`, which is not pushed. `v1.0.0` rebuilds byte for byte into the files first uploaded to the marketplace, and `v1.0.1` into the files of the 1.0.1 release.
+
+For each release, after "Before every release":
 
 ```bash
-cd D:/ANDROID/integrari/smstunnel-opencart
-git branch -M main
-gh repo create narcisbodea/smstunnel-opencart --public --source . --remote origin \
-  --description "SMSTunnel for OpenCart: order texts from your own phone and your own number"
-git push -u origin main
 bash tools/build.sh
 cp build/smstunnel-oc4/smstunnel.ocmod.zip build/smstunnel.ocmod.zip
-git tag -a v1.0.0 -m "SMSTunnel for OpenCart 1.0.0"
-git push origin v1.0.0
-gh release create v1.0.0 build/smstunnel-oc3.ocmod.zip build/smstunnel.ocmod.zip \
-  --title "SMSTunnel for OpenCart 1.0.0" \
-  --notes "First version. OpenCart 3.0.x: smstunnel-oc3.ocmod.zip. OpenCart 4.0.2+ and 4.1: smstunnel.ocmod.zip (keep the name). Upload in Extensions > Installer. See CHANGELOG.md."
+git tag -a vX.Y.Z -m "SMSTunnel for OpenCart X.Y.Z"
+git push origin main vX.Y.Z
+gh release create vX.Y.Z build/smstunnel-oc3.ocmod.zip build/smstunnel.ocmod.zip \
+  --title "SMSTunnel for OpenCart X.Y.Z" --notes-file notes.md   # the install line and the CHANGELOG entry
 ```
 
-The download links then work as `https://github.com/narcisbodea/smstunnel-opencart/releases/latest/download/smstunnel-oc3.ocmod.zip` and `.../smstunnel.ocmod.zip`, and the smstunnel.io page (`site-page.md`) can link to them.
+`https://github.com/narcisbodea/smstunnel-opencart/releases/latest/download/smstunnel-oc3.ocmod.zip` and `https://github.com/narcisbodea/smstunnel-opencart/releases/latest/download/smstunnel.ocmod.zip` always serve the newest release; the README and `site-page.md` link to them.
+
+The test keys in this repository are built from two parts at run time, so that no file holds a literal `sk_live_…` or `sk_test_…` string that a secret scanner could take for a real key. Keep it that way.
