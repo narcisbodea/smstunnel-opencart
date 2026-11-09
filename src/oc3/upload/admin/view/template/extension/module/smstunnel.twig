@@ -1,0 +1,346 @@
+{# SMSTunnel for OpenCart (OpenCart 3.0). GPL-3.0-or-later, (c) 2026 NARBOWEB SRL. #}
+{{ header }}{{ column_left }}
+<div id="content" class="smstunnel-page">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-smstunnel" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary" id="button-save"><i class="fa fa-save"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if flash %}
+    <div class="alert alert-{{ flash.type|e }} alert-dismissible" id="smstunnel-flash"><i class="fa {% if flash.type == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i> {{ flash.text|e }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+    <div class="panel panel-default" id="smstunnel-status">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-mobile"></i> {{ text_panel_phone }}</h3>
+      </div>
+      <div class="panel-body">
+        <p>{{ text_intro }}</p>
+        {% if test_server %}
+        <div class="alert alert-warning">{{ text_test_server }} <code>{{ test_server|e }}</code></div>
+        {% endif %}
+        {% if not has_key %}
+        <h4>{{ text_steps }}</h4>
+        <ol class="smstunnel-steps">
+          <li>{{ text_step_app }} <a href="{{ google_play_url|e }}" target="_blank" rel="noopener noreferrer">{{ text_google_play }}</a></li>
+          <li>{{ text_step_key }} <a href="{{ dashboard_url|e }}" target="_blank" rel="noopener noreferrer">{{ text_dashboard }}</a></li>
+          <li>{{ text_step_save }}</li>
+        </ol>
+        {% else %}
+        <h4>{{ text_phones }}</h4>
+        {% if phones_error %}
+        <div class="alert alert-danger">{{ phones_error|e }}</div>
+        {% elseif not phones %}
+        <div class="alert alert-warning">{{ text_no_phones }} <a href="{{ google_play_url|e }}" target="_blank" rel="noopener noreferrer">{{ text_google_play }}</a></div>
+        {% else %}
+        <div class="table-responsive">
+          <table class="table table-bordered smstunnel-phones">
+            <thead>
+              <tr>
+                <td>{{ column_phone }}</td>
+                <td>{{ column_state }}</td>
+                <td>{{ column_phone_id }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for phone in phones %}
+              <tr>
+                <td>{{ phone.name|e }} {% if phone.selected %}<span class="label label-info">{{ text_sends_texts }}</span>{% endif %}</td>
+                <td>{% if phone.isOnline %}<span class="label label-success">{{ text_online }}</span>{% else %}<span class="label label-default">{{ text_offline }}</span>{% endif %}
+                  {% if phone.last_seen %}<span class="text-muted small">{{ text_last_seen|format(phone.last_seen)|e }}</span>{% endif %}</td>
+                <td><code>{{ phone.id|e }}</code></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <p class="help-block">{{ text_offline_help }}</p>
+        {% endif %}
+        {% if device_unknown %}
+        <div class="alert alert-warning">{{ text_device_unknown }}</div>
+        {% endif %}
+        <form method="post" action="{{ action }}" class="form-inline smstunnel-test" id="form-smstunnel-test">
+          <input type="hidden" name="smstunnel_action" value="test">
+          <div class="form-group">
+            <label for="input-test-number">{{ text_test_to }}</label>
+            <input type="text" name="test_number" id="input-test-number" value="{{ test_number|e }}" placeholder="+14155550123" class="form-control">
+          </div>
+          <button type="submit" class="btn btn-default" id="button-test"><i class="fa fa-envelope"></i> {{ button_send_test }}</button>
+        </form>
+        {% endif %}
+        {% if last_failure %}
+        <div class="alert alert-danger smstunnel-last-failure"><strong>{{ text_last_failure }}</strong> {{ last_failure.date|e }}<br>{{ last_failure.error|e }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-smstunnel" class="form-horizontal" autocomplete="off">
+      <input type="hidden" name="smstunnel_action" value="save">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-key"></i> {{ text_account }}</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+            <div class="col-sm-10">
+              <select name="status" id="input-status" class="form-control">
+                <option value="1"{% if status %} selected="selected"{% endif %}>{{ text_enabled }}</option>
+                <option value="0"{% if not status %} selected="selected"{% endif %}>{{ text_disabled }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group{% if errors.api_key %} has-error{% endif %}">
+            <label class="col-sm-2 control-label" for="input-api-key">{{ entry_api_key }}</label>
+            <div class="col-sm-10">
+              <input type="password" name="api_key" value="" placeholder="sk_live_..." id="input-api-key" class="form-control" autocomplete="new-password" spellcheck="false">
+              {% if errors.api_key %}<div class="text-danger">{{ errors.api_key|e }}</div>{% endif %}
+              <p class="help-block">{{ text_key_hint|e }} <a href="{{ dashboard_url|e }}" target="_blank" rel="noopener noreferrer">{{ text_dashboard }}</a></p>
+            </div>
+          </div>
+          <div class="form-group{% if errors.device_id %} has-error{% endif %}">
+            <label class="col-sm-2 control-label" for="input-device">{{ entry_device }}</label>
+            <div class="col-sm-10">
+              {% if phones %}
+              <select name="device_id" id="input-device" class="form-control">
+                <option value="">{{ text_any_phone }}</option>
+                {% for phone in phones %}
+                <option value="{{ phone.id|e }}"{% if phone.selected %} selected="selected"{% endif %}>{{ phone.name|e }} ({% if phone.isOnline %}{{ text_online }}{% else %}{{ text_offline }}{% endif %})</option>
+                {% endfor %}
+                {% if device_unknown %}
+                <option value="{{ device_id|e }}" selected="selected">{{ device_id|e }}</option>
+                {% endif %}
+              </select>
+              <p class="help-block">{{ text_device_help }}</p>
+              {% else %}
+              <input type="text" name="device_id" value="{{ device_id|e }}" id="input-device" class="form-control" spellcheck="false">
+              <p class="help-block">{{ text_device_manual }}</p>
+              {% endif %}
+              {% if errors.device_id %}<div class="text-danger">{{ errors.device_id|e }}</div>{% endif %}
+            </div>
+          </div>
+          <div class="form-group{% if errors.country %} has-error{% endif %}">
+            <label class="col-sm-2 control-label" for="input-country">{{ entry_country }}</label>
+            <div class="col-sm-10">
+              <select name="country" id="input-country" class="form-control">
+                {% for country in countries %}
+                <option value="{{ country.iso|e }}"{% if country.selected %} selected="selected"{% endif %}>{{ country.name|e }}</option>
+                {% endfor %}
+              </select>
+              {% if errors.country %}<div class="text-danger">{{ errors.country|e }}</div>{% endif %}
+              <p class="help-block">{{ text_country_help }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-shopping-cart"></i> {{ text_owner }}</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-owner-status">{{ entry_owner_status }}</label>
+            <div class="col-sm-10">
+              <select name="owner_status" id="input-owner-status" class="form-control">
+                <option value="1"{% if owner_status %} selected="selected"{% endif %}>{{ text_yes }}</option>
+                <option value="0"{% if not owner_status %} selected="selected"{% endif %}>{{ text_no }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group{% if errors.owner_numbers %} has-error{% endif %}">
+            <label class="col-sm-2 control-label" for="input-owner-numbers">{{ entry_owner_numbers }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="owner_numbers" value="{{ owner_numbers|e }}" placeholder="+14155550123" id="input-owner-numbers" class="form-control">
+              {% if errors.owner_numbers %}<div class="text-danger">{{ errors.owner_numbers|e }}</div>{% endif %}
+              <p class="help-block">{{ text_owner_numbers_help|e }}</p>
+            </div>
+          </div>
+          <div class="form-group{% if errors.owner_text %} has-error{% endif %}">
+            <label class="col-sm-2 control-label" for="input-owner-text">{{ entry_owner_text }}</label>
+            <div class="col-sm-10">
+              <textarea name="owner_text" rows="2" id="input-owner-text" class="form-control" maxlength="{{ max_length }}">{{ owner_text|e }}</textarea>
+              {% if errors.owner_text %}<div class="text-danger">{{ errors.owner_text|e }}</div>{% endif %}
+              <p class="help-block">{{ text_placeholders|e }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-user"></i> {{ text_customer }}</h3>
+        </div>
+        <div class="panel-body">
+          <p>{{ text_customer_help|e }}</p>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-customer-status">{{ entry_customer_status }}</label>
+            <div class="col-sm-10">
+              <select name="customer_status" id="input-customer-status" class="form-control">
+                <option value="1"{% if customer_status %} selected="selected"{% endif %}>{{ text_yes }}</option>
+                <option value="0"{% if not customer_status %} selected="selected"{% endif %}>{{ text_no }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">{{ entry_statuses }}</label>
+            <div class="col-sm-10">
+              <div class="well well-sm smstunnel-statuses">
+                {% for status in statuses %}
+                <div class="checkbox">
+                  <label><input type="checkbox" name="customer_statuses[]" value="{{ status.id }}" id="input-status-{{ status.id }}" class="smstunnel-status-box"{% if status.checked %} checked="checked"{% endif %}> {{ status.name|e }}</label>
+                </div>
+                {% endfor %}
+              </div>
+              <p class="help-block">{{ text_statuses_help }} {{ text_suggested_help }}</p>
+            </div>
+          </div>
+          {% for status in statuses %}
+          <div class="form-group smstunnel-status-text{% if errors['customer_text_' ~ status.id] %} has-error{% endif %}" data-status="{{ status.id }}">
+            <label class="col-sm-2 control-label" for="input-text-{{ status.id }}">{{ text_for_status|format(status.name)|e }}</label>
+            <div class="col-sm-10">
+              <textarea name="customer_texts[{{ status.id }}]" rows="2" id="input-text-{{ status.id }}" class="form-control" maxlength="{{ max_length }}" placeholder="{{ status.suggestion|e }}">{{ status.text|e }}</textarea>
+              {% if errors['customer_text_' ~ status.id] %}<div class="text-danger">{{ errors['customer_text_' ~ status.id]|e }}</div>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+          <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2"><p class="help-block">{{ text_placeholders|e }}</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-cogs"></i> {{ text_advanced }}</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-group{% if errors.api_url %} has-error{% endif %}">
+            <label class="col-sm-2 control-label" for="input-api-url">{{ entry_api_url }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="api_url" value="{{ api_url|e }}" id="input-api-url" class="form-control" spellcheck="false">
+              {% if errors.api_url %}<div class="text-danger">{{ errors.api_url|e }}</div>{% endif %}
+              <p class="help-block">{{ text_api_url_help }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div class="panel panel-default" id="smstunnel-recent">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_recent }}</h3>
+      </div>
+      <div class="panel-body">
+        {% if recent %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover smstunnel-log">
+            <thead>
+              <tr>
+                <td>{{ column_date }}</td>
+                <td>{{ column_text }}</td>
+                <td>{{ column_order }}</td>
+                <td>{{ column_number }}</td>
+                <td>{{ column_status }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in recent %}
+              <tr data-log-id="{{ row.id }}"{% if row.awaiting %} data-awaiting="1"{% endif %}>
+                <td class="text-nowrap">{{ row.date|e }}</td>
+                <td>{{ row.what|e }}</td>
+                <td class="text-nowrap">{% if row.order_id %}<a href="{{ row.order_url|e }}">#{{ row.order_id }}</a>{% endif %}</td>
+                <td class="text-nowrap smstunnel-number">{{ row.number|e }}</td>
+                <td class="smstunnel-state">
+                  <span class="label label-{{ row.status_class|e }}">{{ row.status_label|e }}</span>
+                  <span class="smstunnel-delivery text-muted small">{{ row.delivery|e }}</span>
+                  {% if row.detail %}<div class="smstunnel-detail text-muted small">{{ row.detail|e }}</div>{% endif %}
+                  {% if row.attempts > 1 %}<div class="text-muted small">{{ text_tried|format(row.attempts)|e }}</div>{% endif %}
+                  {% if row.can_resend %}
+                  <form method="post" action="{{ action }}" class="smstunnel-resend">
+                    <input type="hidden" name="smstunnel_action" value="resend">
+                    <input type="hidden" name="log_id" value="{{ row.id }}">
+                    <button type="submit" class="btn btn-default btn-xs"><i class="fa fa-refresh"></i> {{ button_resend }}</button>
+                  </form>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <form method="post" action="{{ action }}" class="pull-right" onsubmit="return confirm('{{ text_clear_confirm|e('js') }}');">
+          <input type="hidden" name="smstunnel_action" value="clear">
+          <button type="submit" class="btn btn-link btn-sm"><i class="fa fa-trash-o"></i> {{ button_clear }}</button>
+        </form>
+        {% else %}
+        <p>{{ text_no_texts }}</p>
+        {% endif %}
+        <p class="help-block">{{ text_log_help }}</p>
+      </div>
+    </div>
+    <p class="text-muted small">{{ text_version|e }}</p>
+  </div>
+</div>
+<style>
+.smstunnel-page .smstunnel-steps li { margin-bottom: 6px; }
+.smstunnel-page .smstunnel-phones { max-width: 820px; }
+.smstunnel-page .smstunnel-test { margin-top: 12px; }
+.smstunnel-page .smstunnel-test .form-control { min-width: 220px; margin: 0 8px; }
+.smstunnel-page .smstunnel-statuses { max-height: 340px; overflow-y: auto; margin-bottom: 0; }
+.smstunnel-page .smstunnel-statuses .checkbox { margin-top: 2px; margin-bottom: 2px; }
+.smstunnel-page .smstunnel-resend { margin-top: 6px; }
+.smstunnel-page .smstunnel-detail { max-width: 420px; }
+</style>
+<script type="text/javascript"><!--
+(function () {
+  // Show the text of a status only while its box is ticked.
+  function sync(box) {
+    var group = document.querySelector('.smstunnel-status-text[data-status="' + box.value + '"]');
+    if (group) { group.style.display = box.checked ? '' : 'none'; }
+  }
+  var boxes = document.querySelectorAll('.smstunnel-status-box');
+  for (var i = 0; i < boxes.length; i++) {
+    sync(boxes[i]);
+    boxes[i].addEventListener('change', function () { sync(this); });
+  }
+
+  // Ask SMSTunnel what the phone did with the recent texts.
+  if (document.querySelector('#smstunnel-recent tr[data-awaiting]')) {
+    $.ajax({
+      url: '{{ refresh|e('js') }}'.replace(/&amp;/g, '&'),
+      type: 'post',
+      dataType: 'json',
+      success: function (json) {
+        $.each(json.rows || [], function (i, row) {
+          var tr = $('#smstunnel-recent tr[data-log-id="' + row.id + '"]');
+          tr.find('.label').attr('class', 'label label-' + row.status_class).text(row.status_label);
+          tr.find('.smstunnel-delivery').text(row.delivery);
+          if (row.detail) {
+            if (!tr.find('.smstunnel-detail').length) { tr.find('.smstunnel-state').append('<div class="smstunnel-detail text-muted small"></div>'); }
+            tr.find('.smstunnel-detail').text(row.detail);
+          }
+          tr.removeAttr('data-awaiting');
+        });
+      }
+    });
+  }
+})();
+//--></script>
+{{ footer }}

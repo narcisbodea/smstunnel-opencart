@@ -1,0 +1,44 @@
+# A throwaway OpenCart store to test SMSTunnel for OpenCart. One store per compose project, for example:
+#
+#   OC_ZIP=../../.upstream/zip-3.0.5.1/opencart-3.0.5.1.zip OC_IMAGE=wordpress:latest OC_PORT=8731 \
+#     docker compose -p smst-int-oc3 -f tests/docker/docker-compose.yml up -d
+#   OC_ZIP=../../.upstream/zip-4.1.0.4/opencart-4.1.0.4.zip OC_IMAGE=wordpress:latest OC_PORT=8741 \
+#     docker compose -p smst-int-oc4 -f tests/docker/docker-compose.yml up -d
+#
+# OC_ZIP is the official release zip from github.com/opencart/opencart/releases (tests/e2e/run.mjs downloads
+# it). OC_IMAGE is any php:*-apache image with gd, zip and mysqli; the wordpress images have them
+# (wordpress:latest is PHP 8.3, wordpress:php8.2-apache PHP 8.2).
+# The store answers on http://localhost:OC_PORT/ from the host and from inside the container (Apache
+# listens on that port too, for the admin's own calls to the store).
+# Tear down with: docker compose -p <project> -f tests/docker/docker-compose.yml down -v
+services:
+  db:
+    image: mariadb:10.11
+    environment:
+      MARIADB_ROOT_PASSWORD: opencart
+      MARIADB_DATABASE: opencart
+    command: ["--innodb-buffer-pool-size=64M", "--performance-schema=OFF", "--max-connections=40", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_general_ci"]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  web:
+    image: ${OC_IMAGE:-wordpress:latest}
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: ["sh", "/scripts/oc-entrypoint.sh"]
+    ports:
+      - "127.0.0.1:${OC_PORT:-8731}:${OC_PORT:-8731}"
+    environment:
+      OC_PORT: ${OC_PORT:-8731}
+      OC_ADMIN_USER: admin
+      OC_ADMIN_PASSWORD: Smstunnel-test-2026
+      OC_ADMIN_EMAIL: admin@example.com
+    volumes:
+      - ${OC_ZIP:?Set OC_ZIP to an OpenCart release zip}:/opencart.zip:ro
+      - ./scripts:/scripts:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

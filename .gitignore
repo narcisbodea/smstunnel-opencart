@@ -1,0 +1,11 @@
+/build/
+/.upstream/
+/tests/e2e/node_modules/
+/tests/e2e/results/
+/tests/fake-api/node_modules/
+/tests/fake-api/*.log
+/tests/docker/.state/
+.env
+*.log
+.DS_Store
+Thumbs.db

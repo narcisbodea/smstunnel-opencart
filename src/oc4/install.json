@@ -1,0 +1,8 @@
+{
+    "name": "SMSTunnel: SMS from your own phone",
+    "description": "Texts you about new orders and your customers about their own orders, from your own Android phone and your own number, through SMSTunnel.",
+    "code": "smstunnel",
+    "version": "1.0.0",
+    "author": "NARBOWEB SRL",
+    "link": "https://smstunnel.io"
+}
