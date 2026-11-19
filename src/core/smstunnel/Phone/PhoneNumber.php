@@ -36,6 +36,14 @@ final class PhoneNumber
      */
     const KEEP_LEADING_ZERO = array('39', '378', '379', '225', '229', '241', '242');
 
+    /**
+     * Calling codes of the countries whose national numbers, written without the trunk prefix, can be longer than
+     * 10 digits and begin with the calling code itself, with the longest length. Brazil: area code 55 (Rio Grande do
+     * Sul) and a 9-digit mobile number, "(55) 99123-4567", which is +55 55 99123-4567. Germany and Austria are left
+     * out: their national numbers are written with the 0, and 49301234567 is far more often +49 30 1234567.
+     */
+    const LONGEST_NATIONAL = array('55' => 11);
+
     /** Kept in sync with the SMSTunnel WordPress plugin (SMSTunnel::is_premium_number()). */
     const PREMIUM_PATTERNS = array(
         '/^\+40(90|80)[0-9]+$/',
@@ -82,6 +90,7 @@ final class PhoneNumber
             return array('', $raw === '' ? self::MISSING : self::INVALID);
         }
         $prefix = (string) preg_replace('/\D+/', '', (string) $callPrefix);
+        $longest = array_key_exists($prefix, self::LONGEST_NATIONAL) ? self::LONGEST_NATIONAL[$prefix] : 10;
 
         if (preg_match('/^[^0-9]*\+/', $raw)) {
             // Already international: "+40 721 123 456", "(+40) 721 123 456".
@@ -98,11 +107,11 @@ final class PhoneNumber
         } elseif ($digits[0] === '0') {
             // National number with its trunk 0: "0721 123 456" in Romania is +40 721 123 456.
             $number = '+' . $prefix . (in_array($prefix, self::KEEP_LEADING_ZERO, true) ? $digits : substr($digits, 1));
-        } elseif (strlen($digits) >= 11 && strpos($digits, $prefix) === 0) {
-            // The calling code typed without "+": "40721123456". No national number is that long.
+        } elseif (strlen($digits) > $longest && strpos($digits, $prefix) === 0) {
+            // The calling code typed without "+": "40721123456", longer than the country's national numbers.
             $number = '+' . $digits;
         } else {
-            // National number without the trunk 0: "721123456", "(415) 555-0123".
+            // National number without the trunk 0: "721123456", "(415) 555-0123", or "(55) 99123-4567" in Brazil.
             $number = '+' . $prefix . $digits;
         }
 

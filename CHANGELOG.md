@@ -2,6 +2,10 @@
 
 All notable changes to SMSTunnel for OpenCart. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.0.2] - 2026-11-19
+
+- A Brazilian number from area code 55 (Rio Grande do Sul) typed without `+55`, such as `(55) 99123-4567`, was read as if it began with the calling code, which gave a wrong number (`+55991234567`). It now gets the calling code: `+5555991234567`. Both packages, OpenCart 3.0 and 4, carry the fix.
+
 ## [1.0.1] - 2026-11-09
 
 For OpenCart 3.0 stores on a PHP older than 7.1, where the extension sends nothing and its page says it needs PHP 7.1:
@@ -26,5 +30,6 @@ First version, for OpenCart 3.0.x (`smstunnel-oc3.ocmod.zip`) and OpenCart 4.0.2
 - On OpenCart 3.0 with a PHP older than 7.1, the extension does nothing: its page says which PHP it needs, installing it sets nothing up, and checkout is left alone. After a PHP upgrade, uninstall it and install it again.
 - Uninstalling removes the events, the settings and the list of texts.
 
+[1.0.2]: https://github.com/narcisbodea/smstunnel-opencart/releases/tag/v1.0.2
 [1.0.1]: https://github.com/narcisbodea/smstunnel-opencart/releases/tag/v1.0.1
 [1.0.0]: https://github.com/narcisbodea/smstunnel-opencart/releases/tag/v1.0.0
